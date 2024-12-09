@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 30, 2024 at 09:22 PM
+-- Generation Time: Dec 09, 2024 at 10:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,6 +34,26 @@ CREATE TABLE `attendance` (
   `remarks` varchar(255) NOT NULL,
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `attendance_records`
+--
+
+CREATE TABLE `attendance_records` (
+  `record_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `remarks` varchar(255) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `attendance_records`
+--
+
+INSERT INTO `attendance_records` (`record_id`, `student_id`, `remarks`, `time`) VALUES
+(58, 42, 'Absent', '2024-12-09 21:36:03');
 
 -- --------------------------------------------------------
 
@@ -136,9 +156,8 @@ CREATE TABLE `student_info` (
 --
 
 INSERT INTO `student_info` (`id`, `first_name`, `last_name`, `student_id`, `gender`, `parent`, `profile_pic`, `section_id`) VALUES
-(8, 'Miggy', 'Blas', '22-88990', 'Male', 'Reynnie', 'static/uploads/466595117_441439332327347_2904423254398471489_n.jpg', 47),
-(20, 'Nicole', 'Mahilum', '22-12345', 'Female', 'Miggy', 'static/uploads/nicole.jpg', 48),
-(22, 'Patrick Miguel', 'Blas', '22-11663', 'Male', 'Reynnie', 'static/uploads/profile-pic.png', 49);
+(23, 'Ron', 'Alejo', '22-11758', 'Male', 'MIggy Blas', 'static/uploads/nicole.jpg', 50),
+(42, 'Nicole', 'Mahilum', '1', 'Male', 'Miggy', 'static/uploads/nicole.jpg', 69);
 
 -- --------------------------------------------------------
 
@@ -161,7 +180,8 @@ INSERT INTO `teacher` (`id`, `username`, `email`, `password`) VALUES
 (7, 'nini', 'nini@gmail.com', 'nini'),
 (8, 'mharian', 'mharian@gmail.com', 'mharian'),
 (9, 'nicole mahilum', 'nicole@gmail.com', 'astignimiggy'),
-(10, 'miggy', 'miggy@gmail.com', 'miggy');
+(10, 'miggy', 'miggy@gmail.com', 'miggy'),
+(11, 'lorenzo', 'lorenz@gmail.com', 'gay');
 
 -- --------------------------------------------------------
 
@@ -176,19 +196,23 @@ CREATE TABLE `t_classes` (
   `class_code` varchar(10) NOT NULL,
   `teacher_username` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `year` varchar(50) NOT NULL
+  `year` varchar(50) NOT NULL,
+  `attendance_time` time DEFAULT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `t_classes`
 --
 
-INSERT INTO `t_classes` (`teacher_id`, `id`, `class_name`, `class_code`, `teacher_username`, `created_at`, `year`) VALUES
-(0, 34, 'BPO', '', '', '2024-11-27 15:45:04', '2'),
-(0, 44, 'NS', '', '', '2024-11-30 14:58:57', '4'),
-(10, 47, 'BPO', '', '', '2024-11-30 17:50:24', '3'),
-(7, 48, 'NS', '', '', '2024-11-30 18:41:39', '2'),
-(7, 49, 'WMAD', '', '', '2024-11-30 20:13:22', '3');
+INSERT INTO `t_classes` (`teacher_id`, `id`, `class_name`, `class_code`, `teacher_username`, `created_at`, `year`, `attendance_time`, `start_time`, `end_time`) VALUES
+(0, 34, 'BPO', '', '', '2024-11-27 15:45:04', '2', NULL, '00:00:00', '00:00:00'),
+(0, 44, 'NS', '', '', '2024-11-30 14:58:57', '4', NULL, '00:00:00', '00:00:00'),
+(11, 50, 'WMAD', '', '', '2024-12-02 04:32:45', '3', NULL, '00:00:00', '00:00:00'),
+(8, 51, 'ns', '', '', '2024-12-02 05:36:16', '1', NULL, '00:00:00', '00:00:00'),
+(11, 52, 'BPO', '', '', '2024-12-04 08:23:19', '4', NULL, '00:00:00', '00:00:00'),
+(10, 69, 'WMAD', '', '', '2024-12-09 21:33:54', '3', NULL, '05:35:00', '05:36:00');
 
 --
 -- Indexes for dumped tables
@@ -200,6 +224,13 @@ INSERT INTO `t_classes` (`teacher_id`, `id`, `class_name`, `class_code`, `teache
 ALTER TABLE `attendance`
   ADD PRIMARY KEY (`id`),
   ADD KEY `student_id` (`student_id`);
+
+--
+-- Indexes for table `attendance_records`
+--
+ALTER TABLE `attendance_records`
+  ADD PRIMARY KEY (`record_id`),
+  ADD KEY `attendance_records_ibfk_1` (`student_id`);
 
 --
 -- Indexes for table `quizzes`
@@ -257,7 +288,13 @@ ALTER TABLE `t_classes`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `attendance_records`
+--
+ALTER TABLE `attendance_records`
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `quizzes`
@@ -287,19 +324,19 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `student_info`
 --
 ALTER TABLE `student_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `teacher`
 --
 ALTER TABLE `teacher`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `t_classes`
 --
 ALTER TABLE `t_classes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- Constraints for dumped tables
@@ -310,6 +347,12 @@ ALTER TABLE `t_classes`
 --
 ALTER TABLE `attendance`
   ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student_info` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `attendance_records`
+--
+ALTER TABLE `attendance_records`
+  ADD CONSTRAINT `attendance_records_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student_info` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `quizzes`
