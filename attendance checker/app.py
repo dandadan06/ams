@@ -6,6 +6,7 @@ import re
 
 app = Flask(__name__)
 
+
 # Set a secret key for Flask sessions (ensure this is kept private)
 app.secret_key = 'your_secret_key_here'  # Replace with a random unique key
 
@@ -23,29 +24,75 @@ mysql = MySQL(app)
 def index():
     return render_template('index.html')
 
-@app.route('/fetch_student.php', methods=['GET'])
+# Attendance Route --------------------------------------------------------------------------------
+
+from datetime import timedelta
+
+@app.route('/fetch_student')
 def fetch_student():
     student_id = request.args.get('id')
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('''
-        SELECT student_info.id, student_info.first_name, student_info.last_name, student_info.profile_pic, student_info.student_id, t_classes.class_name AS section
+        SELECT student_info.id, student_info.first_name, student_info.last_name, student_info.student_id, student_info.profile_pic, t_classes.class_name AS section, t_classes.start_time, t_classes.end_time
         FROM student_info
-        JOIN t_classes ON student_info.section_id = t_classes.id
+        LEFT JOIN t_classes ON student_info.section_id = t_classes.id
         WHERE student_info.student_id = %s
     ''', (student_id,))
     student = cursor.fetchone()
+    
     if student:
+        # Record attendance
+        attendance_time = datetime.now()
+        start_time = datetime.strptime(str(student['start_time']), '%H:%M:%S').time()
+        end_time = datetime.strptime(str(student['end_time']), '%H:%M:%S').time()
+        
+        # Calculate the first quarter of the time frame
+        class_duration = datetime.combine(datetime.today(), end_time) - datetime.combine(datetime.today(), start_time)
+        first_quarter = (datetime.combine(datetime.today(), start_time) + class_duration / 4).time()
+        
+        # Determine remarks based on attendance time
+        if attendance_time.time() <= first_quarter:
+            remarks = 'Present'
+        elif first_quarter < attendance_time.time() <= end_time:
+            remarks = 'Late'
+        else:
+            remarks = 'Absent'
+        
+        # Check if an attendance record already exists for today
+        cursor.execute('''
+            SELECT * FROM attendance_records
+            WHERE student_id = %s AND DATE(time) = CURDATE()
+        ''', (student['id'],))
+        existing_record = cursor.fetchone()
+        
+        if existing_record:
+            # Update the existing record
+            cursor.execute('''
+                UPDATE attendance_records
+                SET time = %s, remarks = %s
+                WHERE record_id = %s
+            ''', (attendance_time, remarks, existing_record['record_id']))
+        else:
+            # Insert a new record
+            cursor.execute('INSERT INTO attendance_records (student_id, time, remarks) VALUES (%s, %s, %s)', 
+                           (student['id'], attendance_time, remarks))
+        
+        mysql.connection.commit()
+        
         return jsonify({
             'success': True,
             'id': student['id'],
             'first_name': student['first_name'],
             'last_name': student['last_name'],
-            'profile_pic': student['profile_pic'],
             'student_id': student['student_id'],
-            'section': student['section']
+            'profile_pic': student['profile_pic'],
+            'section': student['section'],
+            'remarks': remarks,
+            'time': attendance_time.strftime('%H:%M:%S')
         })
     else:
         return jsonify({'success': False, 'message': 'Student not found'})
+
 
 
 # Admin Route -------------------------------------------------------------------------------------
@@ -60,6 +107,27 @@ def dashboard():
         return render_template('dashboard.html', sections=sections)
     return redirect(url_for('login'))
 
+@app.route('/section/<int:section_id>/students')
+def section_students(section_id):
+    if 'loggedin' in session:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # Fetch section details
+        cursor.execute('SELECT class_name, year FROM t_classes WHERE id = %s', (section_id,))
+        section = cursor.fetchone()
+        
+        # Fetch students and their attendance records
+        cursor.execute('''
+            SELECT student_info.student_id, student_info.first_name, student_info.last_name, attendance_records.remarks, attendance_records.time
+            FROM student_info
+            LEFT JOIN attendance_records ON student_info.id = attendance_records.student_id
+            WHERE student_info.section_id = %s
+        ''', (section_id,))
+        students = cursor.fetchall()
+        
+        return render_template('student_summary.html', students=students, section_name=section['class_name'], section_year=section['year'])
+    return redirect(url_for('login'))
+
 # Section Route ------------------------------------------------------------------------------------
 
 @app.route('/section', methods=['GET', 'POST'])
@@ -71,11 +139,14 @@ def section():
             # Fetch data from the form
             section = request.form['section']
             year = request.form['year']
+            start_time = request.form['start_time']
+            end_time = request.form['end_time']
 
             # Insert the data into the t_classes table
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             try:
-                cursor.execute('INSERT INTO t_classes (class_name, year, teacher_id) VALUES (%s, %s, %s)', (section, year, teacher_id))
+                cursor.execute('INSERT INTO t_classes (class_name, year, teacher_id, start_time, end_time) VALUES (%s, %s, %s, %s, %s)', 
+                               (section, year, teacher_id, start_time, end_time))
                 mysql.connection.commit()
                 message = 'Section added successfully!'
             except Exception as e:
@@ -210,16 +281,16 @@ def edit_student(student_id):
 def delete_student(student_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     try:
+        # Delete related records from attendance_records
+        cursor.execute('DELETE FROM attendance_records WHERE student_id = %s', (student_id,))
+        cursor.execute('DELETE FROM attendance WHERE student_id = %s', (student_id,))
+        
+        # Delete the student record
         cursor.execute('DELETE FROM student_info WHERE id = %s', (student_id,))
         mysql.connection.commit()
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
-
-
-
-    
-    
 
 # Registration Route ------------------------------------------------------------------------------
 

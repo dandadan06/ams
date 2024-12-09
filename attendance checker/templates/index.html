@@ -12,7 +12,7 @@
         <h1>Isabela State University</h1>
     </header>
     <div class="container">
-        <div class="student-info-container" id="student-info-container">
+        <div class="student-info-container" id="student-info-container" style="display: none;">
             <div class="profile-pic">
                 <img id="profile-pic" src="/static/images/student (1).png" alt="Profile Picture">
             </div>
@@ -20,6 +20,8 @@
                 <p id="student-name">Name: N/A</p>
                 <p id="student-id">ID: N/A</p>
                 <p id="student-section">Section: N/A</p>
+                <p id="student-remarks">Remarks: N/A</p>
+                <p id="student-time">Time: N/A</p>
             </div>
         </div>
         <div class="form-container">
@@ -38,7 +40,7 @@
             event.preventDefault();
             const studentId = document.getElementById('student_id').value;
 
-            fetch(`/fetch_student.php?id=${studentId}`)
+            fetch(`/fetch_student?id=${studentId}`)
                 .then(response => response.json())
                 .then(data => {
                     const messageElement = document.getElementById('message');
@@ -50,22 +52,17 @@
                         document.getElementById('student-name').textContent = `Name: ${data.first_name} ${data.last_name}`;
                         document.getElementById('student-id').textContent = `ID: ${data.student_id}`;
                         document.getElementById('student-section').textContent = `Section: ${data.section}`;
+                        document.getElementById('student-remarks').textContent = `Remarks: ${data.remarks}`;
+                        document.getElementById('student-time').textContent = `Time: ${data.time}`;
 
-                        // Record attendance
-                        fetch(`/section/attendance/${data.id}`, {
-                            method: 'POST'
-                        })
-                        .then(response => response.json())
-                        .then(attendanceData => {
-                            if (!attendanceData.success) {
-                                alert('Error recording attendance: ' + attendanceData.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
+                        // Update student summary
+                        const studentSummaryRow = document.querySelector(`tr[data-student-id="${data.student_id}"]`);
+                        if (studentSummaryRow) {
+                            studentSummaryRow.querySelector('.remarks').textContent = data.remarks;
+                            studentSummaryRow.querySelector('.time').textContent = data.time;
+                        }
                     } else {
-                        messageElement.textContent = 'Student not found';
+                        messageElement.textContent = data.message;
                         studentInfoContainer.style.display = 'none';
                     }
                 })

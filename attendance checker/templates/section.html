@@ -141,45 +141,50 @@
     <main>
         <div class="container">
 
-            <!-- Add Section Form -->
-            <div id="add-section-form" class="card">
-                <h1>Add Section</h1>
-                <form action="/section" method="post" class="add-section-form">
-                    <label for="section">Section:</label>
-                    <input type="text" id="section" name="section" placeholder="Enter section" required>
-                    <label for="year">Year Level:</label>
-                    <input type="number" id="year" name="year" placeholder="Enter year level" required>
-                    <button type="submit">Add Section</button>
+<!-- Add Section Form -->
+<div id="add-section-form" class="card">
+    <h1>Add Section</h1>
+    <form action="/section" method="post" class="add-section-form">
+        <label for="section">Section:</label>
+        <input type="text" id="section" name="section" placeholder="Enter section" required>
+        <label for="year">Year Level:</label>
+        <input type="number" id="year" name="year" placeholder="Enter year level" required>
+        <label for="start_time">Class Start Time:</label>
+        <input type="time" id="start_time" name="start_time" required>
+        <label for="end_time">Class End Time:</label>
+        <input type="time" id="end_time" name="end_time" required>
+        <button type="submit">Add Section</button>
+    </form>
+    {% if message %}
+        <p class="message">{{ message }}</p>
+    {% endif %}
+</div>
+
+<!-- Sections List -->
+<div id="sections-list">
+    {% for sec in sections|sort(attribute='id', reverse=True) %}
+        <div class="card">
+            <div class="card-image">
+                <img src="/static/images/educ.avif" alt="Section Image">
+            </div>
+            <div class="card-content">
+                <h2>Section: {{ sec['class_name'] }}</h2>
+                <p>Year Level: {{ sec['year'] }}</p>
+                <p>Time Frame: {{ sec['start_time'] }} - {{ sec['end_time'] }}</p> <!-- Display the time frame -->
+            </div>
+
+            <div class="card-actions">
+                <!-- Open Button to Show Section Details -->
+                <button type="button" onclick="openSection('{{ sec['id'] }}', '{{ sec['class_name'] }}', '{{ sec['year'] }}')">Open</button>
+
+                <!-- Delete Section Form -->
+                <form action="/section/delete/{{ sec['id'] }}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this section?')">Delete</button>
                 </form>
-                {% if message %}
-                    <p class="message">{{ message }}</p>
-                {% endif %}
             </div>
-
-            <!-- Sections List -->
-            <div id="sections-list">
-                {% for sec in sections %}
-                    <div class="card">
-                        <div class="card-image">
-                            <img src="/static/images/educ.avif" alt="Section Image">
-                        </div>
-                        <div class="card-content">
-                            <h2>Section: {{ sec['class_name'] }}</h2>
-                            <p>Year Level: {{ sec['year'] }}</p>
-                        </div>
-
-                        <div class="card-actions">
-                            <!-- Open Button to Show Section Details -->
-                            <button type="button" onclick="openSection('{{ sec['id'] }}', '{{ sec['class_name'] }}', '{{ sec['year'] }}')">Open</button>
-
-                            <!-- Delete Section Form -->
-                            <form action="/section/delete/{{ sec['id'] }}" method="post" style="display:inline;">
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this section?')">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+        </div>
+    {% endfor %}
+</div>
 
             <!-- Section Details (Initially hidden) -->
             <div id="section-details" class="section-details">
@@ -312,27 +317,28 @@
                 });
         }
 
-        // Function to delete a student
-        function deleteStudent(studentId, button) {
-            if (confirm('Are you sure you want to delete this student?')) {
-                fetch(`/section/delete_student/${studentId}`, {
-                    method: 'POST'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Remove the student card from the DOM
-                        const studentCard = button.closest('.student-card');
-                        studentCard.remove();
-                    } else {
-                        alert('Error deleting student: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+
+        <!-- Function to delete a student -->
+function deleteStudent(studentId, button) {
+    if (confirm('Are you sure you want to delete this student?')) {
+        fetch(`/section/delete_student/${studentId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the student card from the DOM
+                const studentCard = button.closest('.student-card');
+                studentCard.remove();
+            } else {
+                alert('Error deleting student: ' + data.message);
             }
-        }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
 
         // Function to open the edit student modal
         function openEditModal(studentId) {

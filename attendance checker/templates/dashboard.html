@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="static/css/admin.css">
-    <link rel="stylesheet" href="static/css/section.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/section.css') }}">
     <style>
         .section-card {
             background-color: var(--card-bg);
@@ -53,13 +53,11 @@
     <header id="navbar">
         <h1>Isabela State University</h1>
         <div class="logo">
-            <img src="static/images/logo.png" alt="Logo" />
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" />
             
             <div class="dropdown">
                 <div class="logo-dropdown">
-
                     <div class="dropdown-content">
-                        
                         <h3>{{ session['username'] }}</h3>
                         <a href="#">Settings</a>
                         <a href="{{ url_for('logout') }}">Logout</a>
@@ -89,22 +87,28 @@
     </aside>
 
     <main>
-        <div class="container">
+        <div class="container" id="section-cards-container">
             <h2>Sections</h2>
             <div class="section-cards-container">
-                {% for section in sections %}
+                {% for section in sections|sort(attribute='id', reverse=True) %}
                     <div class="section-card">
-                        <img src="/static/images/educ.avif" alt="Section Image">
+                        <img src="{{ url_for('static', filename='images/educ.avif') }}" alt="Section Image">
                         <div class="section-info">
                             <h3>{{ section.class_name }}</h3>
                             <p>Year Level: {{ section.year }}</p>
                         </div>
-                        <button type="button" onclick="window.location.href='{{ url_for('view_section', section_id=section.id) }}'">Open</button>
+                        <button type="button" onclick="openSection({{ section.id }})">Open</button>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </main>
+
+    <script>
+        function openSection(sectionId) {
+            window.location.href = `/section/${sectionId}/students`;
+        }
+    </script>
 
 </body>
 </html>
