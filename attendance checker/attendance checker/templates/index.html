@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+    <header>
+        <img src="static/images/logo.png" alt="Logo" class="logo">
+        <h1>Isabela State University</h1>
+    </header>
+    <div class="container">
+        <div class="student-info-container" id="student-info-container" style="display: none;">
+            <div class="profile-pic">
+                <img id="profile-pic" src="/static/images/student (1).png" alt="Profile Picture">
+            </div>
+            <div class="student-details">
+                <p id="student-name">Name: N/A</p>
+                <p id="student-id">ID: N/A</p>
+                <p id="student-section">Section: N/A</p>
+                <p id="student-remarks">Remarks: N/A</p>
+                <p id="student-time">Time: N/A</p>
+            </div>
+        </div>
+        <div class="form-container">
+            <h1>Student Attendance</h1>
+            <form id="attendance-form">
+                <label for="student_id">Student ID:</label>
+                <input type="text" id="student_id" name="student_id" placeholder="Enter student ID" required>
+                <button type="submit">Submit</button>
+            </form>
+            <p id="message" class="message"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('attendance-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const studentId = document.getElementById('student_id').value;
+
+            fetch(`/fetch_student?id=${studentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const messageElement = document.getElementById('message');
+                    const studentInfoContainer = document.getElementById('student-info-container');
+                    if (data.success) {
+                        messageElement.textContent = 'Attendance was successful!';
+                        studentInfoContainer.style.display = 'flex';
+                        document.getElementById('profile-pic').src = data.profile_pic;
+                        document.getElementById('student-name').textContent = `Name: ${data.first_name} ${data.last_name}`;
+                        document.getElementById('student-id').textContent = `ID: ${data.student_id}`;
+                        document.getElementById('student-section').textContent = `Section: ${data.section}`;
+                        document.getElementById('student-remarks').textContent = `Remarks: ${data.remarks}`;
+                        document.getElementById('student-time').textContent = `Time: ${data.time}`;
+
+                        // Update student summary
+                        const studentSummaryRow = document.querySelector(`tr[data-student-id="${data.student_id}"]`);
+                        if (studentSummaryRow) {
+                            studentSummaryRow.querySelector('.remarks').textContent = data.remarks;
+                            studentSummaryRow.querySelector('.time').textContent = data.time;
+                        }
+                    } else {
+                        messageElement.textContent = data.message;
+                        studentInfoContainer.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>

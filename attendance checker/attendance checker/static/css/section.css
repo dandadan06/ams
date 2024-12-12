@@ -1,0 +1,316 @@
+:root {
+    --bg-color: #C9E9D2; /* Background color for the body */
+    --navbar-bg: #f8f8f8; /* Navbar background color */
+    --sidebar-bg: #B6C4B6; /* Sidebar background color */
+    --text-color: #333; /* Default text color */
+    --icon-color: #5f6368; /* Icon color */
+    --hover-bg: #A0B9A0; /* Hover background color */
+    --line-clr: #ddd; /* Line color */
+    --primary-color: #4C9B8C; /* Primary button color, accent color */
+    --button-hover: #388F76; /* Button hover color */
+    --card-bg: #ffffff; /* Card background color */
+    --border-color: #B5B5B5; /* Border color for inputs and cards */
+    --form-input-bg: #F7F7F7; /* Form input background */
+    --message-color: #4CAF50; /* Message color (green) */
+}
+
+
+
+.content-wrapper {
+    margin-left: 260px; /* Adjusting for the sidebar */
+    padding: 20px;
+}
+
+#section-container, #student-container {
+    margin-bottom: 40px;
+}
+
+/* Add Section Form Styling */
+#add-section-form {
+    display: flex;
+    flex-direction: column; /* Stack form elements vertically */
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 30%;  /* Ensure form takes full available width */
+}
+
+#add-section-form label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+#add-section-form input,
+#add-section-form button {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#add-section-form input {
+    background-color: var(--form-input-bg);
+    transition: border-color 0.3s ease;
+}
+
+#add-section-form input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 102, 204, 0.5); /* Blue glow on focus */
+}
+
+#add-section-form button {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+#add-section-form button:hover {
+    background-color: var(--button-hover);
+}
+
+#add-section-form .message {
+    font-size: 16px;
+    color: green;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Section Cards */
+#sections-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    width: calc(33.33% - 20px); /* Ensures 3 cards per row with spacing */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s ease;
+    margin-bottom: 20px; /* Adjust bottom margin for spacing between rows */
+}
+
+.card h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-align: center;  /* Centering the header */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.card button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+    background-color: var(--button-hover);
+}
+
+    /* Modal container */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+/* Modal container */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal content */
+.modal-content {
+    background-color: var(--card-bg);
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Close button */
+.close {
+    color: var(--icon-color);
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--text-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Form styling */
+.edit-section-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-section-form label {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.edit-section-form input,
+.edit-section-form select {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--form-input-bg);
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.edit-section-form input[type="file"] {
+    padding: 5px;
+}
+
+/* Button */
+.edit-section-form button {
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.edit-section-form button:hover {
+    background-color: var(--button-hover);
+}
+
+.edit-section-form button:active {
+    background-color: var(--primary-color);
+}
+
+/* Ensure the form inputs are aligned properly */
+.edit-section-form input[type="text"],
+.edit-section-form input[type="number"],
+.edit-section-form input[type="file"],
+.edit-section-form select {
+    width: 100%;
+    box-sizing: border-box; /* Prevent inputs from overflowing */
+}
+
+/* Modal title */
+.modal h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+#add-section-form h1,
+#add-student-form h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+#add-section-form label,
+#add-student-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#add-section-form input,
+#add-section-form button,
+#add-student-form input,
+#add-student-form select,
+#add-student-form button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#add-section-form button,
+#add-student-form button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#add-section-form button:hover,
+#add-student-form button:hover {
+    background-color: var(--button-hover);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .card {
+        width: calc(50% - 20px); /* 2 cards per row on medium screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 100%; /* 1 card per row on small screens */
+    }
+
+    #add-section-form {
+        flex-direction: column;
+    }
+
+    #add-section-form input,
+    #add-section-form button {
+        width: 100%; /* Full width for inputs and button on small screens */
+    }
+}

@@ -1,0 +1,201 @@
+:root {
+    --bg-color: #C9E9D2; /* Background color for the body */
+    --navbar-bg: #f8f8f8; /* Navbar background color */
+    --sidebar-bg: #B6C4B6; /* Sidebar background color */
+    --text-color: #333; /* Default text color */
+    --icon-color: #5f6368; /* Icon color */
+    --hover-bg: #A0B9A0; /* Hover background color */
+    --line-clr: #ddd; /* Line color */
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: auto 1fr;
+    background-color: whitesmoke;
+    font-family: Arial, sans-serif;
+}
+
+/* Navigation Bar */
+#navbar {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: var(--navbar-bg);
+    border-bottom: 1px solid var(--line-clr);
+}
+
+#navbar h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* Logo with Dropdown */
+#navbar .logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#navbar .logo img {
+    height: 40px;
+    width: auto;
+    cursor: pointer;
+}
+
+/* Dropdown Menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Menu Content */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0; /* Align the dropdown to the right */
+    background-color: var(--bg-color);
+    min-width: 200px; /* Increase the width for better spacing */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    border-radius: 8px;
+    margin-top: 10px; /* Adjust this value to move the dropdown down */
+    padding: 10px; /* Add padding for better spacing */
+}
+
+.dropdown-content a {
+    color: var(--text-color);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+    border-radius: 5px; /* Add border radius for smoother corners */
+}
+
+.dropdown-content a:hover {
+    background-color: var(--hover-bg);
+    color: #000;
+}
+
+/* Show dropdown when hovering over the logo */
+#navbar .logo:hover .dropdown-content {
+    display: block;
+}
+
+/* Adjust the dropdown content for better alignment */
+.logo-dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.logo-dropdown h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--line-clr); /* Add a bottom border for separation */
+    padding-bottom: 10px; /* Add padding for better spacing */
+    width: 100%; /* Make the header take full width */
+    text-align: left; /* Align text to the left */
+}
+.dropdown-content a {
+    color: var(--text-color);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--hover-bg);
+    color: #000;
+}
+
+/* Show dropdown when hovering over the logo */
+#navbar .logo:hover .dropdown-content {
+    display: block;
+}
+
+/* Sidebar */
+#sidebar {
+    box-sizing: border-box;
+    height: 100vh;
+    width: 250px;
+    padding: 1em;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--line-clr);
+    position: sticky;
+    top: 0;
+}
+
+#sidebar ul {
+    list-style: none;
+}
+
+#sidebar li {
+    margin-bottom: 1.5em;
+}
+
+#sidebar a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#sidebar a:hover {
+    background-color: var(--hover-bg);
+    color: #000;
+}
+
+#sidebar svg {
+    margin-right: 10px;
+    fill: var(--icon-color);
+    transition: fill 0.3s ease;
+}
+
+#sidebar a:hover svg {
+    fill: #000;
+}
+
+#sidebar span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Main Content */
+main {
+    padding: min(30px, 7%);
+    background-color: var(--bg-color);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #sidebar {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    #sidebar {
+        display: none; /* Hide sidebar on small screens */
+    }
+}
