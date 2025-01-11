@@ -1,5 +1,5 @@
 # ams
-Attendance Management System Update
+Attendance Manager System
 
 
 
