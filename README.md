@@ -1,5 +1,5 @@
 # ams
-Attendance Manager System
+Attendance Management System 
 
 
 
